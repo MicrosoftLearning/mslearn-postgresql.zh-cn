@@ -54,14 +54,14 @@ lab:
     RG_NAME=rg-learn-postgresql-ai-$REGION
     ```
 
-    最后一个命令随机生成 PostgreSQL 管理员登录的密码。 请确保将其复制到安全位置，以便以后连接到 PostgreSQL 灵活服务器时使用。
+    最后一个命令随机生成 PostgreSQL 管理员登录的密码。 请确保将其复制 到安全位置，以便稍后连接到 PostgreSQL 灵活服务器。
 
     ```bash
     a=()
     for i in {a..z} {A..Z} {0..9}; 
-       do
-       a[$RANDOM]=$i
-    done
+        do
+        a[$RANDOM]=$i
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD

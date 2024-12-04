@@ -25,7 +25,7 @@ lab:
 
 ## 开始之前
 
-你需要一个具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)，并且必须在该订阅中获得 Azure OpenAI 访问许可。 如果需要 Azure OpenAI 访问权限，请在 [Azure OpenAI 受限访问](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access)页进行申请。
+你需要具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)。
 
 ### 在你的 Azure 订阅上部署资源
 
@@ -66,7 +66,7 @@ lab:
     for i in {a..z} {A..Z} {0..9}; 
         do
         a[$RANDOM]=$i
-    done
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
@@ -298,8 +298,8 @@ lab:
 
     ```sql
     SELECT id, name
-    FROM listings, unnest(entities) e
-    WHERE e.text LIKE '%basement%'
+    FROM listings, unnest(listings.entities) AS e
+    WHERE e.text LIKE '%roof%deck%'
     LIMIT 10;
     ```
 
@@ -356,8 +356,8 @@ lab:
     ```sql
     UPDATE listings
     SET
-     description_pii_safe = pii.redacted_text,
-     pii_entities = pii.entities
+        description_pii_safe = pii.redacted_text,
+        pii_entities = pii.entities
     FROM (SELECT id, description FROM listings WHERE description_pii_safe IS NULL OR pii_entities IS NULL ORDER BY id LIMIT 100) subset,
     LATERAL azure_cognitive.recognize_pii_entities(subset.description, 'en-us') as pii
     WHERE listings.id = subset.id;
