@@ -10,7 +10,7 @@ lab:
 
 ## 开始之前
 
-你需要一个具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)，并且必须在该订阅中获得 Azure OpenAI 访问许可。 如果需要 Azure OpenAI 访问权限，请在 [Azure OpenAI 受限访问](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access)页进行申请。
+你需要具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)。
 
 ### 在你的 Azure 订阅上部署资源
 
@@ -49,9 +49,9 @@ lab:
     ```bash
     a=()
     for i in {a..z} {A..Z} {0..9}; 
-       do
-       a[$RANDOM]=$i
-    done
+        do
+        a[$RANDOM]=$i
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
@@ -249,7 +249,7 @@ lab:
 
     元命令输出显示函数的架构、名称、结果数据类型和参数。 此信息可帮助你了解如何与查询中的函数交互。
 
-    输出显示了 `summarize_extractive()` 函数的三个重载，让你能够查看它们的差异。 输出中的 `Argument data types` 属性显示了三个函数重载期望的参数列表：
+    输出显示 `summarize_extractive()` 函数的三个重载，使你能够查看其差异。 输出中的 `Argument data types` 属性显示了三个函数重载所期望的参数列表：
 
     | 参数 | 类型 | 默认 | 说明 |
     | -------- | ---- | ------- | ----------- |
