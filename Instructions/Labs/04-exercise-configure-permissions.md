@@ -81,7 +81,7 @@ lab:
 
 ### 创建 zoo 数据库
 
-1. 导航到包含练习脚本文件的文件夹，或从 [MSLearn PostgreSQL 实验室](https://github.com/MicrosoftLearning/mslearn-postgresql/Allfiles/Labs/02)下载 **Lab2_ZooDb.sql**。
+1. 导航到包含练习脚本文件的文件夹，或从 [MSLearn PostgreSQL 实验室](https://github.com/MicrosoftLearning/mslearn-postgresql/blob/main/Allfiles/Labs/02)下载 **Lab2_ZooDb.sql**。
 1. 如果 Azure Data Studio 尚未打开，请将其打开。
 1. 依次选择“文件”、“打开文件”，并导航到保存脚本的文件夹。 选择 **../Allfiles/Labs/02/Lab2_ZooDb.sql** 和“**打开**”。 如果显示信任警告，请选择“打开”。
 1. 运行该脚本。 创建 zoodb 数据库。
