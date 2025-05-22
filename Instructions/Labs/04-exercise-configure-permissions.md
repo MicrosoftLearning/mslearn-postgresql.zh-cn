@@ -21,9 +21,9 @@ lab:
 
 ## 创建练习环境
 
-在本练习及以后的练习中，你将使用 Bicep 脚本将 Azure Database for PostgreSQL - 灵活服务器和其他资源部署到 Azure 订阅中。 Bicep 脚本位于之前克隆的 GitHub 存储库的 `/Allfiles/Labs/Shared` 文件夹中。
+在本练习及以后的练习中，将使用 Bicep 脚本将 Azure Database for PostgreSQL - 灵活服务器和其他资源部署到 Azure 订阅中。 Bicep 脚本位于之前克隆的 GitHub 存储库的 `/Allfiles/Labs/Shared` 文件夹中。
 
-### 下载并安装 Visual Studio Code 和 PostgreSQL 扩展。
+### 下载并安装 Visual Studio Code 和 PostgreSQL 扩展
 
 如果未安装 Visual Studio Code：
 
@@ -35,7 +35,7 @@ lab:
 
 1. 在左侧菜单中，选择“扩展”以显示“扩展”面板。
 
-1. 在搜索栏中，输入“PostgreSQL”。 将显示 Visual Studio Code 的 PostgreSQL 扩展图标。 请确保选择 Microsoft 的产品。
+1. 在搜索栏中，输入“PostgreSQL”。 将显示“Visual Studio Code 的 PostgreSQL 扩展”图标。 请确保选择 Microsoft 的产品。
 
 1. 选择“安装”  。 扩展安装。
 
@@ -43,7 +43,7 @@ lab:
 
 如果没有安装 Azure CLI 或 Git：
 
-1. 在浏览器中，导航到“[安装 Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)”，并按照操作系统安装说明进行操作。
+1. 在浏览器中，导航到“[安装 Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)”，并按照操作系统的说明进行操作。
 
 1. 在浏览器中，导航到“[下载并安装 Git](https://git-scm.com/downloads)”，并按照操作系统的说明进行操作。
 
@@ -211,12 +211,12 @@ lab:
 
     1. 在“**新建连接**”对话框中，输入以下信息：
 
-        - **服务器名称**：<your-server-name>.postgres.database.azure.com
+        - **服务器名称**：`<your-server-name>`.postgres.database.azure.com
         - 身份验证类型：密码
         - **用户名**：pgAdmin
         - **密码**：之前生成的随机密码。
         - 选中“**保存密码**”复选框。
-        - **连接名称**：<your-server-name>
+        - **连接名称**：`<your-server-name>`
 
     1. 选择“**测试连接**”以测试连接。 如果连接成功，请选择“**保存并连接**”以保存连接，否则请查看连接信息，然后重试。
 
@@ -228,15 +228,15 @@ lab:
 
 1. 在 Visual Studio Code 右下角，确保连接为绿色。 如果不是，则应显示“**PGSQL 已断开连接**”。 选择“**PGSQL 已断开连接**”文本，然后从命令面板的列表中选择 PostgreSQL 服务器连接。 如果请求密码，请输入之前生成的密码。
 
-    > &#128221; 还可以更改查询窗格上的数据库。 可以在查询选项卡本身下记下服务器名称和数据库名称。 选择数据库名称将显示数据库列表。 从列表中选择 `zoodb` 数据库。
-
 1. 是时候创建数据库了。
 
     1. 突出显示 **DROP** 和 **CREATE** 语句并运行它们。
 
     1. 如果仅突出显示 **SELECT current_database()** 语句并运行它，则会看到数据库当前设置为 `postgres`。 需要将其更改为 `zoodb`。
 
-    1. 选择菜单栏中带有“*运行*”图标的省略号，然后选择**更改 PostgreSQL 数据库**。 从数据库列表中选择 `zoodb`。
+    1. 选择菜单栏中带有“*运行*”图标的省略号，然后选择“**更改 PostgreSQL 数据库**”。 从数据库列表中选择 `zoodb`。
+
+        > &#128221; 还可以更改查询窗格上的数据库。 可以在查询选项卡本身下记下服务器名称和数据库名称。 选择数据库名称将显示数据库列表。 从列表中选择 `zoodb` 数据库。
 
     1. 再次运行 **SELECT current_database()** 语句以确认数据库现在设置为 `zoodb`。
 
@@ -418,4 +418,18 @@ lab:
 
 1. 如果不再需要此 PostgreSQL 服务器进行其他练习，若要避免产生不必要的 Azure 成本，请删除在本练习中创建的资源组。
 
+1. 如果想让 PostgreSQL 服务器继续运行，可以保持其开启状态。 如果不想让它一直运行，可以在 bash 终端停止服务器，避免产生不必要的费用。 运行以下命令以停止服务器：
+
+    ```azurecli
+    az postgres flexible-server stop --name <your-server-name> --resource-group $RG_NAME
+    ```
+
+    将 `<your-server-name>` 替换为你的 PostgreSQL 服务器名称。
+
+    > &#128221; 你也可以从 Azure 门户停止服务器。 在 Azure 门户中，导航到**资源组**，选择之前创建的资源组。 选择 PostgreSQL 服务器，然后从菜单中选择“停止”****。
+
 1. 如果需要，请删除之前克隆的 Git 存储库。
+
+你已成功完成此练习。 你已学习如何分配 RBAC 角色以管理对 Azure Database for PostgreSQL 资源的访问，以及通过 PostgreSQL GRANTS 控制数据库操作权限。
+
+你还学习了如何在 Microsoft Entra ID 中创建新用户帐户，并分配读取者和参与者角色。 最后，你在 PostgreSQL 中创建了新角色，并为其分配访问数据库的权限。
