@@ -6,33 +6,98 @@ lab:
 
 # 理解锁定
 
-在本练习中，你将查看 PostgreSQL 中的系统参数和元数据。
+在本练习中，我们查看 PostgreSQL 中的系统参数和元数据。
 
 ## 开始之前
 
-你需要自己的 Azure 订阅才能完成此模块中的练习。 如果没有 Azure 订阅，可以在[使用 Azure 免费帐户在云中构建](https://azure.microsoft.com/free/)设置免费试用帐户。
+需要有自己的 Azure 订阅才能完成本练习。 如果还没有 Azure 订阅，可以创建一个 [Azure 免费试用版](https://azure.microsoft.com/free)。
+
+此外，需要在计算机上安装以下软件：
+
+- Visual Studio Code。
+- Microsoft Postgres Visual Studio Code 扩展。
+- Azure CLI。
+- Git。
 
 ## 创建练习环境
 
-### 在你的 Azure 订阅上部署资源
+在本练习及以后的练习中，将使用 Bicep 脚本将 Azure Database for PostgreSQL - 灵活服务器和其他资源部署到 Azure 订阅中。 Bicep 脚本位于之前克隆的 GitHub 存储库的 `/Allfiles/Labs/Shared` 文件夹中。
 
-此步骤指导你使用 Azure Cloud Shell 中的 Azure CLI 命令创建资源组并运行 Bicep 脚本，以将完成此练习所需的 Azure 服务部署到你的 Azure 订阅中。
+### 下载并安装 Visual Studio Code 和 PostgreSQL 扩展
 
-1. 打开 web 浏览器，导航到 [Azure 门户](https://portal.azure.com/)。
+如果未安装 Visual Studio Code：
 
-2. 选择 Azure 门户工具栏中的“ **Cloud Shell** ”图标，以打开浏览器窗口底部的新“ [Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview) ”窗格。
+1. 在浏览器中，导航到“[下载 Visual Studio Code](https://code.visualstudio.com/download)”，并选择适合操作系统的版本。
 
-    ![Azure 工具栏屏幕截图，Cloud Shell 图标用红框突出显示。](media/08-portal-toolbar-cloud-shell.png)
+1. 按照操作系统的安装说明进行操作。
 
-    如果出现提示，请选择打开 *Bash* shell 所需的选项。 如果以前使用过 *PowerShell* 控制台，请将其切换到 *Bash* shell。
+1. 打开 Visual Studio Code。
 
-3. 在 Cloud Shell 提示符下，输入以下内容以克隆包含练习资源的 GitHub 存储库：
+1. 在左侧菜单中，选择“扩展”以显示“扩展”面板。
+
+1. 在搜索栏中，输入“PostgreSQL”。 将显示“Visual Studio Code 的 PostgreSQL 扩展”图标。 请确保选择 Microsoft 的产品。
+
+1. 选择“安装”  。 扩展安装。
+
+### 下载并安装 Azure CLI 和 Git
+
+如果没有安装 Azure CLI 或 Git：
+
+1. 在浏览器中，导航到“[安装 Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)”，并按照操作系统的说明进行操作。
+
+1. 在浏览器中，导航到“[下载并安装 Git](https://git-scm.com/downloads)”，并按照操作系统的说明进行操作。
+
+### 下载练习文件
+
+如果已克隆包含练习文件的 GitHub 存储库，*请跳过下载练习文件*。
+
+要下载练习文件，请将包含练习文件的 GitHub 存储库克隆到本地计算机。 存储库包含完成本练习所需的所有脚本和资源。
+
+1. 打开 Visual Studio Code（如果尚未打开）。
+
+1. 选择“**显示所有命令**” (Ctrl+Shift+P)，以打开命令面板。
+
+1. 在命令面板中，搜索并选择“**Git：克隆**”。
+
+1. 在命令面板中，输入以下内容以克隆包含练习资源的 GitHub 存储库，然后按 **Enter**：
 
     ```bash
-    git clone https://github.com/MicrosoftLearning/mslearn-postgresql.git
+    https://github.com/MicrosoftLearning/mslearn-postgresql.git
     ```
 
-4. 接下来，运行三个命令来定义变量，以在使用 Azure CLI 命令创建 Azure 资源时减少冗余键入。 变量表示要分配给资源组的名称（`RG_NAME`）、要将资源部署到的 Azure 区域（`REGION`）和随机生成的 PostgreSQL 管理员登录密码（`ADMIN_PASSWORD`）。
+1. 按照提示选择要克隆存储库的文件夹。 存储库克隆到所选位置中命名为 `mslearn-postgresql` 的文件夹。
+
+1. 当系统询问你是否要打开克隆的存储库时，选择“打开”。 在 Visual Studio Code 中打开存储库。
+
+### 在你的 Azure 订阅上部署资源
+
+如果已安装 Azure 资源，*请跳过部署资源*。
+
+此步骤指导你使用 Visual Studio Code 中的 Azure CLI 命令创建资源组并运行 Bicep 脚本，以将完成此练习所需的 Azure 服务部署到 Azure 订阅中。
+
+> &#128221; 如果要在此学习路径中执行多个模块，则可以在它们之间共享 Azure 环境。 在这种情况下，你只需完成此资源部署步骤一次。
+
+1. 打开 Visual Studio Code 并打开克隆存储库的文件夹（如果尚未打开）。
+
+1. 展开资源管理器窗格中的 **mslearn-postgresql** 文件夹。
+
+1. 展开 **Allfiles/Labs/Shared** 文件夹。
+
+1. 右键单击 **Allfiles/Labs/Shared** 文件夹，然后选择“**在集成终端中打开**”。 该选择会在 “Visual Studio Code” 窗口中打开一个终端窗口。
+
+1. 默认情况下，终端可能会打开 “**Powershell**” 窗口。 在本部分实验中，请使用 **bash shell**。 **+** 图标旁边还有一个下拉箭头。 选择它后，从可用配置文件列表中选择 **Git Bash** 或 **Bash**。 该选择会打开一个新的终端窗口，使用 **bash shell**。
+
+    > &#128221; 如有需要，你可以关闭 “**PowerShell**” 终端窗口，但这并非必要。 你可以同时打开多个终端窗口。
+
+1. 在终端窗口中运行以下命令，登录你的 Azure 帐户：
+
+    ```bash
+    az login
+    ```
+
+    运行该命令后将打开一个新的浏览器窗口，提示你登录 Azure 帐户。 完成登录后，返回终端窗口。
+
+1. 接下来，运行三个命令来定义变量，以在使用 Azure CLI 命令创建 Azure 资源时减少冗余键入。 这些变量分别表示要分配给资源组的名称（`RG_NAME`）、资源部署所在的 Azure 区域（`REGION`），以及 PostgreSQL 管理员登录所用的随机生成密码（`ADMIN_PASSWORD`）。
 
     在第一个命令中，分配给相应变量的区域是 `eastus`，但你也可以将其替换为首选位置。
 
@@ -40,54 +105,71 @@ lab:
     REGION=eastus
     ```
 
-    以下命令分配要用于资源组的名称，该资源组将容纳本练习中使用的所有资源。 分配给相应变量的资源组名称是 `rg-learn-work-with-postgresql-$REGION`，其中 `$REGION` 是上文指定的位置。 但是，你可以将它更改为符合偏好的任何其他资源组名称。
+    以下命令用于分配资源组的名称，该资源组将包含本练习所用的所有资源。 资源组名称已分配至对应变量 `rg-learn-work-with-postgresql-$REGION`，其中`$REGION`表示你先前指定的位置。 *你也可以更改为符合个人喜好或已有的其他资源组名称。*。
 
     ```bash
     RG_NAME=rg-learn-work-with-postgresql-$REGION
     ```
 
-    最后一个命令随机生成 PostgreSQL 管理员登录的密码。 请确保将其复制到安全位置，以便稍后可以使用它连接到 PostgreSQL 灵活服务器。
+    最后一个命令会随机生成 PostgreSQL 管理员登录密码。 请确保将其复制到安全位置，以便稍后可以使用它连接到 PostgreSQL 灵活服务器。
 
     ```bash
+    #!/bin/bash
+    
+    # Define array of allowed characters explicitly
+    chars=( {a..z} {A..Z} {0..9} '!' '@' '#' '$' '%' '^' '&' '*' '(' ')' '_' '+' )
+    
     a=()
-    for i in {a..z} {A..Z} {0..9}; 
-       do
-       a[$RANDOM]=$i
+    for ((i = 0; i < 100; i++)); do
+        rand_char=${chars[$RANDOM % ${#chars[@]}]}
+        a+=("$rand_char")
     done
-    ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
+    
+    # Join first 18 characters without delimiter
+    ADMIN_PASSWORD=$(IFS=; echo "${a[*]:0:18}")
+    
     echo "Your randomly generated PostgreSQL admin user's password is:"
-    echo $ADMIN_PASSWORD
+    echo "$ADMIN_PASSWORD"
+    echo "Please copy it to a safe place, as you will need it later to connect to your PostgreSQL flexible server."
     ```
 
-5. 如果有权访问多个 Azure 订阅，并且默认订阅不是要为此练习创建资源组和其他资源的订阅，请运行此命令来设置相应的订阅，将 `<subscriptionName|subscriptionId>` 令牌替换为要使用的订阅的名称或 ID：
+1. （如果使用默认订阅，请跳过此步骤。）如果你有多个 Azure 订阅权限，且默认订阅*不是*本次练习中用于创建资源组和其他资源的订阅，请运行此命令，替换`<subscriptionName|subscriptionId>`为你希望使用的订阅名称或 ID，以设置正确的订阅。
 
     ```azurecli
-    az account set --subscription <subscriptionName|subscriptionId>
+    az account set --subscription 16b3c013-d300-468d-ac64-7eda0820b6d3
     ```
 
-6. 运行以下 Azure CLI 命令创建资源组：
+1. （如使用已有资源组，请跳过此步骤）运行以下 Azure CLI 命令以创建资源组：
 
     ```azurecli
     az group create --name $RG_NAME --location $REGION
     ```
 
-7. 最后，使用 Azure CLI 执行 Bicep 部署脚本，在资源组中预配 Azure 资源：
+1. 最后，使用 Azure CLI 执行 Bicep 部署脚本，在资源组中预配 Azure 资源：
 
     ```azurecli
-    az deployment group create --resource-group $RG_NAME --template-file "mslearn-postgresql/Allfiles/Labs/Shared/deploy-postgresql-server.bicep" --parameters adminLogin=pgAdmin adminLoginPassword=$ADMIN_PASSWORD databaseName=adventureworks
+    az deployment group create --resource-group $RG_NAME --template-file "Allfiles/Labs/Shared/deploy-postgresql-server.bicep" --parameters adminLogin=pgAdmin adminLoginPassword=$ADMIN_PASSWORD databaseName=adventureworks
     ```
 
-    Bicep 部署脚本将完成此练习所需的 Azure 服务预配到你的资源组中。 部署的资源是 Azure Database for PostgreSQL - 灵活服务器。 bicep 脚本还会创建一个数据库 - 该数据库可在命令行上配置为参数。
+    Bicep 部署脚本将完成此练习所需的 Azure 服务预配到你的资源组中。 部署的资源是 Azure Database for PostgreSQL - 灵活服务器。 bicep 脚本还会创建 adventureworks 数据库。
 
-    部署需要数分钟才能完成。 你可以从 Cloud Shell 监视它，也可以导航到上述创建的资源组的“**部署**”页面，在那里观察部署进度。
+    部署需要数分钟才能完成。 你可以在 bash 终端监控部署进度，或者进入之前创建的资源组的“**部署**”页面查看。
 
-8. 完成资源部署后，关闭 Cloud Shell 窗格。
+1. 脚本为 PostgreSQL 服务器创建随机名称，你可运行以下命令查询服务器名称：
+
+    ```azurecli
+    az postgres flexible-server list --query "[].{Name:name, ResourceGroup:resourceGroup, Location:location}" --output table
+    ```
+
+    请记下服务器名称，稍后本练习中需要用它连接服务器。
+
+    > &#128221; 服务器名称也可在 Azure 门户中查看。 在 Azure 门户中，导航到**资源组**，选择之前创建的资源组。 资源组中列出了 PostgreSQL 服务器。
 
 ### 排查部署错误
 
-运行 Bicep 部署脚本时可能会遇到一些错误。 最常见的消息和解决它们的步骤包括：
+运行 Bicep 部署脚本时，可能会出现若干错误。 最常见的消息和解决它们的步骤包括：
 
-- 如果你以前为此学习路径运行过 Bicep 部署脚本并随后删除了资源，如果在删除资源后 48 小时内尝试重新运行该脚本，可能会收到如下所示的错误消息：
+- 如果你此前运行过该学习路径的 Bicep 部署脚本并删除了资源，且在资源删除后的 48 小时内重新执行该脚本，可能会收到类似以下的错误消息：
 
     ```bash
     {"code": "InvalidTemplateDeployment", "message": "The template deployment 'deploy' is not valid according to the validation procedure. The tracking id is '4e87a33d-a0ac-4aec-88d8-177b04c1d752'. See inner errors for details."}
@@ -96,7 +178,7 @@ lab:
     {"code": "FlagMustBeSetForRestore", "message": "An existing resource with ID '/subscriptions/{subscriptionId}/resourceGroups/rg-learn-postgresql-ai-eastus/providers/Microsoft.CognitiveServices/accounts/{accountName}' has been soft-deleted. To restore the resource, you must specify 'restore' to be 'true' in the property. If you don't want to restore existing resource, please purge it first."}
     ```
 
-    如果收到此消息，请修改上述 `azure deployment group create` 命令，将 `restore` 参数设置为 `true`，然后重新运行。
+    如果收到此消息，请修改之前的`azure deployment group create`命令，将`restore`参数设置为`true`，然后重新执行。
 
 - 如果所选区域受限于预配特定资源，则必须将 `REGION` 变量设置为其他位置，然后重新运行命令以创建资源组并运行 Bicep 部署脚本。
 
@@ -104,7 +186,7 @@ lab:
     {"status":"Failed","error":{"code":"DeploymentFailed","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGrouName}/providers/Microsoft.Resources/deployments/{deploymentName}","message":"At least one resource deployment operation failed. Please list deployment operations for details. Please see https://aka.ms/arm-deployment-operations for usage details.","details":[{"code":"ResourceDeploymentFailure","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}","message":"The resource write operation failed to complete successfully, because it reached terminal provisioning state 'Failed'.","details":[{"code":"RegionIsOfferRestricted","message":"Subscriptions are restricted from provisioning in this region. Please choose a different region. For exceptions to this rule please open a support request with Issue type of 'Service and subscription limits'. See https://review.learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-request-quota-increase for more details."}]}]}}
     ```
 
-- 如果脚本由于接受负责任的 AI 协议的要求而无法创建 AI 资源，则可能会遇到以下错误：在这种情况下，使用 Azure 门户用户界面创建 Azure AI 服务资源，然后重新运行部署脚本。
+- 如果实验室需要 AI 资源，可能会出现以下错误。 当脚本因需接受负责任 AI 协议而无法创建 AI 资源时，会出现此错误。 如果是这种情况，请使用 Azure 门户用户界面创建一个 Azure AI 服务资源，然后重新运行部署脚本。
 
     ```bash
     {"code": "InvalidTemplateDeployment", "message": "The template deployment 'deploy' is not valid according to the validation procedure. The tracking id is 'f8412edb-6386-4192-a22f-43557a51ea5f'. See inner errors for details."}
@@ -113,27 +195,55 @@ lab:
     {"code": "ResourceKindRequireAcceptTerms", "message": "This subscription cannot create TextAnalytics until you agree to Responsible AI terms for this resource. You can agree to Responsible AI terms by creating a resource through the Azure Portal then trying again. For more detail go to https://go.microsoft.com/fwlink/?linkid=2164190"}
     ```
 
-## 在 Azure Cloud Shell 中使用 psql 连接到数据库
+### 安装 psql
 
-在此任务中，你将从 [Azure Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview) 使用 [psql 命令行实用工具](https://www.postgresql.org/docs/current/app-psql.html)连接到 Azure Database for PostgreSQL 服务器上的 `adventureworks` 数据库。
+由于需将数据从 CSV 文件复制到 PostgreSQL 数据库，必须在本地安装 `psql`。 *如果已安装 `psql`，请跳过此部分。*
 
-1. 在 [Azure 门户](https://portal.azure.com/)中，导航到新创建的 Azure Database for PostgreSQL 灵活服务器。
+1. 要检查 **psql** 是否已安装在你的环境中，请打开命令行/终端并运行命令 ***psql***。 如果它返回类似“*psql: error: connection to server on socket...*”的消息，说明环境中已安装 **psql** 工具，无需重新安装，可跳过此部分。
 
-2. 在资源菜单的 **设置** 下，选择“**数据库**”为 `adventureworks` 数据库选择“**连接**”。
+1. 安装 “[psql](https://sbp.enterprisedb.com/getfile.jsp?fileid=1258893)”。
 
-    ![Azure Database for PostgreSQL 数据库页的屏幕截图。 adventureworks 数据库的数据库和连接用红框突出显示。](media/08-postgresql-adventureworks-database-connect.png)
+1. 在设置向导中，按照提示操作，直到出现“**选择组件**”对话框，选择“**命令行工具**”。 如果不打算使用这些组件，可取消选中其他组件。 按提示完成安装。
 
-3. 在 Cloud Shell 中的“用户 pgAdmin 密码”提示符下，输入随机生成的 **pgAdmin** 登录密码。
+1. 打开新的命令提示符或终端窗口，运行 “**psql**” 以验证是否安装成功。 如果出现类似 “*psql： error： connection to server on socket...*”的消息，说明 **psql** 工具已成功安装。 否则，你可能需要将 PostgreSQL 的 bin 目录添加到系统 PATH 变量中。
 
-    登录后，将显示 `adventureworks` 数据库的 `psql` 提示。
+    1. 如果使用 Windows，请确认将 PostgreSQL 的 bin 目录添加到系统 PATH 变量。 bin 目录通常位于 `C:\Program Files\PostgreSQL\<version>\bin`。
+        1. 运行命令 `echo %PATH%`，检查 PATH 中是否包含 PostgreSQL 的 bin 目录。 如果未包含，可手动添加。
+        1. 要手动添加，请右键单击“**开始**”按钮。
+        1. 依次选择“**系统**”和“**高级系统设置**”。
+        1. 选择“**环境变量**”按钮。
+        1. 在“**系统变量**”部分中双击“**路径**”变量。
+        1. 选择“**新建**”，添加 PostgreSQL 的 bin 目录路径。
+        1. 添加后，关闭并重新打开命令提示符以使更改生效。
 
-4. 在本练习的其余部分中，可以继续在 Cloud Shell 中工作，因此选择窗格右上方的 **最大化** 按钮来展开浏览器窗口中的窗格可能会有所帮助。
-
-    ![Azure Cloud Shell 窗格的屏幕截图，“最大化”按钮用红框突出显示。](media/08-azure-cloud-shell-pane-maximize.png)
+    1. 如果使用 macOS 或 Linux，PostgreSQL 的 `bin` 目录通常位于 `/usr/local/pgsql/bin`。  
+        1. 可在终端运行 `echo $PATH`，检查此目录是否位于 `PATH` 环境变量中。  
+        1. 如果没有，可以编辑 shell 配置文件（通常是 `.bash_profile`、`.bashrc` 或 `.zshrc`，视具体 shell 而定）添加该目录。
 
 ### 使用数据填充数据库
 
+验证 **psql** 已安装后，打开命令提示符或终端，用命令行连接 PostgreSQL 服务器。
+
+> &#128221; 如果使用 Windows，可使用 **Windows PowerShell** 或 **命令提示符**。 如果使用 macOS 或 Linux，可使用 **终端** 应用程序。
+
+连接到服务器的语法是：
+
+```sql
+psql -h <servername> -p <port> -U <username> <dbname>
+```
+
+1. 在命令提示符处或终端输入 **`--host=<servername>.postgres.database.azure.com`**，其中 `<servername>` 是之前创建的 Azure Database for PostgreSQL 名称。
+
+    服务器名称可在 Azure 门户的“**概述**”页面或 bicep 脚本的输出中找到。
+
+    ```sql
+   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin postgres
+    ```
+
+    系统会提示输入上面复制的管理员帐户密码。
+
 1. 需要在数据库中创建一个表，并使用示例数据填充表，以便你在查看本练习中的锁定时就有了可用信息。
+
 1. 运行以下命令创建 `production.workorder` 表，以便加载数据：
 
     ```sql
@@ -159,38 +269,60 @@ lab:
     TABLESPACE pg_default;
     ```
 
-1. 接下来，使用 `COPY` 命令将数据从 CSV 文件加载到上面创建的表中。 执行以下命令以填充 `production.workorder` 表：
+1. 接下来，使用 `COPY` 命令将 CSV 文件数据加载到之前创建的表中。 执行以下命令以填充 `production.workorder` 表：
 
     ```sql
     \COPY production.workorder FROM 'mslearn-postgresql/Allfiles/Labs/08/Lab8_workorder.csv' CSV HEADER
     ```
 
-    命令输出应为 `COPY 72591`，指示从 CSV 文件写入表中的 72591 行。
+    命令输出应为 `COPY 72591`，表明已从 CSV 文件写入表中 72,591 行。
 
-1. 加载数据后关闭 Cloud Shell 窗格
+1. 关闭命令提示符或终端窗口。
 
-### 使用 Azure Data Studio 连接到数据库
+### 使用 Visual Studio Code 连接数据库
 
-1. 如果尚未安装 Azure Data Studio， [下载并安装 ***Azure Data Studio***](https://go.microsoft.com/fwlink/?linkid=2282284)。
-1. 启动“Azure Data Studio”。
-1. 如果尚未在 Azure Data Studio 中安装 **PostgreSQL** 扩展，请立即安装。
-1. 选择“服务器”，然后选择“新建连接”。
-1. 在“连接类型”中，选择“PostgreSQL”。
-1. 在“服务器名称”中，键入部署服务器时指定的值。
-1. 在“**用户名**”中，键入 **pgAdmin**。
-1. 在“**密码**”中，输入随机生成的 **pgAdmin** 登录密码
-1. 选择“记住密码”。
-1. 单击“连接”
+1. 打开 Visual Studio Code（如未打开），并打开你克隆的 GitHub 存储库所在文件夹。
+
+1. 在左侧菜单中选择 “**PostgreSQL**” 图标。
+
+    > &#128221; 如果未看到 PostgreSQL 图标，请点击 “**扩展**” 图标并搜索 **PostgreSQL**。 选择 Microsoft 提供的 **PostgreSQL** 扩展，并点击“安装”****。
+
+1. 如果你已连接 PostgreSQL 服务器，请跳过此步骤。 要创建新连接：
+
+    1. 在 **PostgreSQL** 扩展中，选择“**+ 添加连接**”，以添加新连接。
+
+    1. 在“**新建连接**”对话框中，输入以下信息：
+
+        - **服务器名称**：`<your-server-name>`.postgres.database.azure.com
+        - 身份验证类型：密码
+        - **用户名**：pgAdmin
+        - **密码**：之前生成的随机密码。
+        - 选中“**保存密码**”复选框。
+        - **连接名称**：`<your-server-name>`
+
+    1. 选择“**测试连接**”以测试连接。 如果连接成功，请选择“**保存并连接**”以保存连接，否则请查看连接信息，然后重试。
+
+1. 如果尚未连接，请选择 PostgreSQL 服务器的“**连接**”。 已连接到 Azure Database for PostgreSQL 服务器。
+
+1. 展开服务器节点及其数据库。 列出了现有数据库。
 
 ## 任务 1：调查默认锁定行为
 
-1. 打开 Azure Data Studio。
-1. 展开“数据库”，右键单击“adventureworks”，然后选择“新建查询”。
-   
-    ![Adventureworks 数据库的屏幕截图，其中突出显示了“新建查询”上下文菜单项](media/08-new-query.png)
+1. 打开 Visual Studio Code（如果尚未打开）。
 
-1. 转到“**文件**”和“**新建查询**”。 现在，你应有一个名称以 **SQL_Query_1** 开头的查询选项卡，和另一个名称以 **SQL_Query_2** 开头的查询选项卡。
-1. 选择“SQLQuery_1”选项卡，键入以下查询，然后选择“运行”。
+1. 启动命令面板 (Ctrl+Shift+P)，然后选择“**PGSQL：新建查询**”。 从命令面板的列表中选择所创建的新连接。 如果请求密码，请输入为新角色创建的密码。
+
+1. 在“**新建查询**”窗口右下角，确认连接显示为绿色。 如果不是，则应显示“**PGSQL 已断开连接**”。 选择“**PGSQL 已断开连接**”文本，然后从命令面板的列表中选择 PostgreSQL 服务器连接。 如果请求密码，请输入之前生成的密码。
+
+1. 在“**新建查询**”窗口中，复制、高亮并执行以下 SQL 语句：
+
+    ```sql
+    SELECT current_database();
+    ```
+
+1. 如果当前数据库未设置为 **adventureworks**，需要将数据库更改为 **adventureworks**。 要更改数据库，请选择菜单栏中带有“*运行*”图标的省略号，然后选择“**更改 PostgreSQL 数据库**”。 从数据库列表中选择 `adventureworks`。 通过运行 **SELECT current_database();** 语句，验证数据库现在是否设置为 `adventureworks`。
+
+1. 在“**新建查询**”窗口中，复制、高亮并执行以下 SQL 语句：
 
     ```sql
     SELECT * FROM production.workorder
@@ -198,7 +330,20 @@ lab:
     ```
 
 1. 请注意，第一行的 **scrappedqty** 值是 **673**。
-1. 选择“SQLQuery_2”选项卡，键入以下查询，然后选择“运行”。
+
+1. 我们需要打开第二个查询窗口，以模拟更新第一个查询窗口数据的事务。 启动命令面板 (Ctrl+Shift+P)，然后选择“**PGSQL：新建查询**”。 从命令面板的列表中选择所创建的新连接。 如果请求密码，请输入为新角色创建的密码。
+
+1. 在“**新建查询**”窗口右下角，确认连接显示为绿色。 如果不是，则应显示“**PGSQL 已断开连接**”。 选择“**PGSQL 已断开连接**”文本，然后从命令面板的列表中选择 PostgreSQL 服务器连接。 如果请求密码，请输入之前生成的密码。
+
+1. 在“**新建查询**”窗口中，复制、高亮并执行以下 SQL 语句：
+
+    ```sql
+    SELECT current_database();
+    ```
+
+1. 如果当前数据库未设置为 **adventureworks**，需要将数据库更改为 **adventureworks**。 要更改数据库，请选择菜单栏中带有“*运行*”图标的省略号，然后选择“**更改 PostgreSQL 数据库**”。 从数据库列表中选择 `adventureworks`。 通过运行 **SELECT current_database();** 语句，验证数据库现在是否设置为 `adventureworks`。
+
+1. 在“**新建查询**”窗口中，复制、高亮并执行以下 SQL 语句：
 
     ```sql
     BEGIN TRANSACTION;
@@ -207,9 +352,12 @@ lab:
     ```
 
 1. 请注意，第二个查询开始一个事务，但不提交该事务。
-1. 返回到 SQLQuery_1 并再次运行查询。
+
+1. 返回到“*第一个*”查询窗口，再次执行该窗口中的查询。
+
 1. 请注意，第一行的 **stockedqty** 值仍然是 **673**。 查询正在使用数据的快照，并且看不到来自其他事务的更新。
-1. 选择“SQLQuery_2”选项卡，删除现有查询，键入以下查询，然后选择“运行”。
+
+1. 选择“*第二个*”查询选项卡，删除已有查询，输入以下查询，选择“**运行**”。
 
     ```sql
     ROLLBACK TRANSACTION;
@@ -217,7 +365,7 @@ lab:
 
 ## 任务 2：将表锁应用于事务
 
-1. 选择“SQLQuery_2”选项卡，键入以下查询，然后选择“运行”。
+1. 选择*第二个*查询选项卡，输入以下查询，然后选择“**运行**”。
 
     ```sql
     BEGIN TRANSACTION;
@@ -227,18 +375,33 @@ lab:
     ```
 
 1. 请注意，第二个查询开始一个事务，但不提交该事务。
-1. 返回到 SQLQuery_1 并再次运行查询。
-1. 请注意，事务被阻止，无论你等待多长时间都不会完成。
-1. 选择“SQLQuery_2”选项卡，删除现有查询，键入以下查询，然后选择“运行”。
+
+1. 返回到*第一个*查询，重新运行查询。
+
+1. 请注意，该事务已被阻塞，无论等待多长时间都不会完成。
+
+1. 选择“*第二个*”查询选项卡，删除已有查询，输入以下查询，选择“**运行**”。
 
     ```sql
     ROLLBACK TRANSACTION;
     ```
 
-1. 返回 **SQLQuery_1**，等待几秒钟，注意到块被移除后，查询已经完成。
+1. 返回“*第一个*”查询选项卡，等待几秒，注意查询在阻塞移除后已完成。
 
-在本练习中，我们了解了默认的锁定行为。 然后，我们显式应用了锁，并看到尽管某些锁提供了非常高级别的保护，但这些锁也可能对性能产生影响。
+## 清理
 
-## 练习清理
+1. 如果不再需要此 PostgreSQL 服务器进行其他练习，若要避免产生不必要的 Azure 成本，请删除在本练习中创建的资源组。
 
-我们在本练习中部署的 Azure Database for PostgreSQL 将产生费用，你可以在本练习后删除服务器。 或者，你可以删除 **rg-learn-work-with-postgresql-eastus** 资源组，以移除在本练习中部署的所有资源。
+1. 如果想让 PostgreSQL 服务器继续运行，可以保持其开启状态。 如果不想让它一直运行，可以在 bash 终端停止服务器，避免产生不必要的费用。 运行以下命令以停止服务器：
+
+    ```azurecli
+    az postgres flexible-server stop --name <your-server-name> --resource-group $RG_NAME
+    ```
+
+    将 `<your-server-name>` 替换为你的 PostgreSQL 服务器名称。
+
+    > &#128221; 你也可以从 Azure 门户停止服务器。 在 Azure 门户中，导航到**资源组**，选择之前创建的资源组。 选择 PostgreSQL 服务器，然后从菜单中选择“停止”****。
+
+1. 如果需要，请删除之前克隆的 Git 存储库。
+
+在本练习中，我们回顾了默认的锁定行为。 然后，我们显式应用了锁，发现虽然部分锁提供了较高的保护，但也可能影响性能。
