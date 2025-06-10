@@ -237,7 +237,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
     服务器名称可在 Azure 门户的“**概述**”页面或 bicep 脚本的输出中找到。
 
     ```sql
-   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin postgres
+   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin adventureworks
     ```
 
     系统会提示输入上面复制的管理员帐户密码。

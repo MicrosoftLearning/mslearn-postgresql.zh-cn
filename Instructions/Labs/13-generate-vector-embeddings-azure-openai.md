@@ -12,7 +12,7 @@ lab:
 
 ## 开始之前
 
-你需要一个具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)，并且必须在该订阅中获得 Azure OpenAI 访问许可。 如果需要 Azure OpenAI 访问权限，请在 [Azure OpenAI 受限访问](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access)页进行申请。
+你需要具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)。
 
 ### 在你的 Azure 订阅上部署资源
 
@@ -22,7 +22,7 @@ lab:
 
 1. 打开 web 浏览器，导航到 [Azure 门户](https://portal.azure.com/)。
 
-2. 选择 Azure 门户工具栏中的“**Cloud Shell**”图标，以打开浏览器窗口底部的新“[Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview)”窗格。
+2. 选择 Azure 门户工具栏中的“ **Cloud Shell** ”图标，以打开浏览器窗口底部的新“ [Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview) ”窗格。
 
     ![Azure 工具栏屏幕截图，Cloud Shell 图标用红框突出显示。](media/13-portal-toolbar-cloud-shell.png)
 
@@ -42,7 +42,7 @@ lab:
     REGION=eastus
     ```
 
-    以下命令分配要用于资源组的名称，该资源组将容纳本练习中使用的所有资源。 分配给相应变量的资源组名称是 `rg-learn-postgresql-ai-$REGION`，其中 `$REGION` 是上文指定的位置。 但是，你可以将它更改为符合偏好的任何其他资源组名称。
+    以下命令分配要用于资源组的名称，该资源组将容纳本练习中使用的所有资源。 分配给相应变量的资源组名称是 `rg-learn-postgresql-ai-$REGION`，其中 `$REGION` 是先前指定的位置。 但是，你可以将它更改为符合偏好的任何其他资源组名称。
 
     ```bash
     RG_NAME=rg-learn-postgresql-ai-$REGION
@@ -55,13 +55,13 @@ lab:
     for i in {a..z} {A..Z} {0..9}; 
         do
         a[$RANDOM]=$i
-    done
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
     ```
 
-5. 如果有权访问多个 Azure 订阅，并且默认订阅不是要为此练习创建资源组和其他资源的订阅，请运行此命令来设置相应的订阅，将 `<subscriptionName|subscriptionId>` 令牌替换为要使用的订阅的名称或 ID：
+5. 如果有权访问多个 Azure 订阅，而默认订阅不是要在其中为此练习创建资源组和其他资源的订阅，请运行此命令来设置相应的订阅，将 `<subscriptionName|subscriptionId>` 令牌替换为要使用的订阅的名称或 ID：
 
     ```azurecli
     az account set --subscription <subscriptionName|subscriptionId>
@@ -81,7 +81,7 @@ lab:
 
     Bicep 部署脚本将完成此练习所需的 Azure 服务预配到你的资源组中。 部署的资源包括 Azure Database for PostgreSQL 灵活服务器、Azure OpenAI 和 Azure AI 语言服务。 Bicep 脚本还执行一些配置步骤，例如将 `azure_ai` 和 `vector` 扩展添加到 PostgreSQL 服务器的_允许列表_中（通过 `azure.extensions` 服务器参数），在服务器上创建名为 `rentals` 的数据库，并使用 `text-embedding-ada-002` 模型将名为 `embedding` 的部署添加到你的 Azure OpenAI 服务中。 请注意，Bicep 文件由此学习路径中的所有模块共享，因此在某些练习中只能使用某些已部署的资源。
 
-    部署需要数分钟才能完成。 你可以从 Cloud Shell 监视它，也可以导航到上述创建的资源组的“**部署**”页面，在那里观察部署进度。
+    部署需要数分钟才能完成。 你可以从 Cloud Shell 监视它，也可以导航到先前创建的资源组的“**部署**”页，在那里观察部署进度。
 
 8. 完成资源部署后，关闭 Cloud Shell 窗格。
  
@@ -106,7 +106,7 @@ lab:
     {"status":"Failed","error":{"code":"DeploymentFailed","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGrouName}/providers/Microsoft.Resources/deployments/{deploymentName}","message":"At least one resource deployment operation failed. Please list deployment operations for details. Please see https://aka.ms/arm-deployment-operations for usage details.","details":[{"code":"ResourceDeploymentFailure","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGrouName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}","message":"The resource write operation failed to complete successfully, because it reached terminal provisioning state 'Failed'.","details":[{"code":"RegionIsOfferRestricted","message":"Subscriptions are restricted from provisioning in this region. Please choose a different region. For exceptions to this rule please open a support request with Issue type of 'Service and subscription limits'. See https://review.learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-request-quota-increase for more details."}]}]}}
     ```
 
-- 如果脚本由于接受负责任的 AI 协议的要求而无法创建 AI 资源，则可能会遇到以下错误：在这种情况下，使用 Azure 门户用户界面创建 Azure AI 服务资源，然后重新运行部署脚本。
+- 如果脚本由于必须接受负责任的 AI 协议而无法创建 AI 资源，则可能会遇到以下错误：在这种情况下，使用 Azure 门户用户界面创建 Azure AI 服务资源，然后重新运行部署脚本。
 
     ```bash
     {"code": "InvalidTemplateDeployment", "message": "The template deployment 'deploy' is not valid according to the validation procedure. The tracking id is 'f8412edb-6386-4192-a22f-43557a51ea5f'. See inner errors for details."}
@@ -121,21 +121,21 @@ lab:
 
 1. 在 [Azure 门户](https://portal.azure.com/)中，导航到新创建的 Azure Database for PostgreSQL 灵活服务器。
 
-2. 在资源菜单中的“**设置**”下，选择“**数据库**”为 `rentals` 数据库选择 “**连接**”。
+2. 在资源菜单中的“**设置**”下，选择“**数据库**”为 `rentals` 数据库选择“**连接**”。 请注意，选择“**连接**”并不会直接连接到数据库，而是提供了多种连接数据库的说明。 查看“**从浏览器或本地连接**”中的说明，并按照这些说明通过 Azure Cloud Shell 建立连接。
 
     ![Azure Database for PostgreSQL 数据库页的屏幕截图。 用于租赁数据库的数据库和连接以红色框突出显示。](media/13-postgresql-rentals-database-connect.png)
 
-3. 在 Cloud Shell 中的“用户 pgAdmin 密码”提示符下，输入随机生成的 **pgAdmin** 登录密码。
+3. 在 Cloud Shell 中的“用户 pgAdmin 密码”提示符处，输入随机生成的 **pgAdmin** 登录密码。
 
     登录后，将显示 `rentals` 数据库的 `psql` 提示。
 
-4. 在本练习的其余部分中，可以继续在 Cloud Shell 中工作，因此选择窗格右上方的 **最大化** 按钮来展开浏览器窗口中的窗格可能会有所帮助。
+4. 在本练习的其余部分中，可以继续在 Cloud Shell 中工作，因此选择窗格右上方的“**最大化**”按钮来展开浏览器窗口中的窗格可能会有所帮助。
 
-    ![Azure Cloud Shell 窗格的屏幕截图，“最大化”按钮用红框突出显示。](media/13-azure-cloud-shell-pane-maximize.png)
+    ![Azure Cloud Shell 窗格的屏幕截图，其中“最大化”按钮以红色框突出显示。](media/13-azure-cloud-shell-pane-maximize.png)
 
 ## 安装：配置扩展
 
-若要存储和查询向量以及生成嵌入内容，需要允许列表并为 Azure Database for PostgreSQL 灵活服务器启用两个扩展： `vector` 和 `azure_ai`。
+若要存储和查询向量以及生成嵌入内容，需要允许列表并为 Azure Database for PostgreSQL 灵活服务器启用两个扩展：`vector` 和 `azure_ai`。
 
 1. 若要同时列出扩展，请按照 [如何使用 PostgreSQL 扩展](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-extensions#how-to-use-postgresql-extensions) 中提供的说明，在服务器参数 `azure.extensions` 中添加 `vector` 和 `azure_ai`。
 
@@ -145,7 +145,7 @@ lab:
     CREATE EXTENSION vector;
     ```
 
-3. 要启用`azure_ai` 扩展，请运行以下 SQL 命令。 你需要 Azure OpenAI 资源的端点和 API 密钥。 有关详细说明，请阅读 “[启用 `azure_ai` 扩展](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/generative-ai-azure-overview#enable-the-azure_ai-extension)”。
+3. 要启用 `azure_ai` 扩展，请运行以下 SQL 命令。 你需要 Azure OpenAI 资源的终结点和 API 密钥。 有关详细说明，请阅读[启用 `azure_ai` 扩展](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/generative-ai-azure-overview#enable-the-azure_ai-extension)。
 
     ```sql
     CREATE EXTENSION azure_ai;
@@ -198,7 +198,7 @@ lab:
     \COPY reviews FROM 'mslearn-postgresql/Allfiles/Labs/Shared/reviews.csv' CSV HEADER
     ```
 
-    命令输出应为 `COPY 354`，指示从 CSV 文件写入表中的 354 行。
+    命令输出应为 `COPY 354`，指示已从 CSV 文件写入表中 354 行。
 
 若要重置示例数据，可以执行 `DROP TABLE listings`，并重复这些步骤。
 
@@ -214,7 +214,7 @@ lab:
     ALTER TABLE listings ADD COLUMN listing_vector vector(1536);
     ```
 
-1. 通过create_embeddings用户定义的函数（由azure_ai扩展实现）调用 Azure OpenAI，为每个列表的说明生成嵌入向量：
+1. 通过 create_embeddings 用户定义的函数（由 azure_ai 扩展实现）调用 Azure OpenAI，为每个列表的说明生成嵌入向量：
 
     ```sql
     UPDATE listings
@@ -248,7 +248,7 @@ lab:
     SELECT azure_openai.create_embeddings('embedding', 'bright natural light');
     ```
 
-    可能会获得以下所的示结果：
+    可能会获得以下所示结果：
 
     ```sql
     -[ RECORD 1 ]-----+-- ...
@@ -318,13 +318,13 @@ lab:
         "listings_pkey" PRIMARY KEY, btree (id)
     ```
 
-1. 确认至少有一行已填充listing_vector列。
+1. 确认至少有一行已填充 listing_vector 列。
 
     ```sql
     SELECT COUNT(*) > 0 FROM listings WHERE listing_vector IS NOT NULL;
     ```
 
-    结果必须显示 `t`，即 true。 表明至少有一行包含相应说明列的嵌入：
+    结果必须显示 `t`，即 true。 指示至少有一行包含相应说明列的嵌入值：
 
     ```sql
     ?column? 
@@ -375,16 +375,16 @@ lab:
 
 ## 清理
 
-完成本练习后，请删除创建的 Azure 资源。 你需要为配置的容量（而不是数据库的使用量）付费。 按照这些说明删除资源组和为此实验室创建的所有资源。
+完成本练习后，请删除已创建的 Azure 资源。 需要基于已配置的容量付费，而不是基于数据库的使用量付费。 按照这些说明删除资源组和为此实验室创建的所有资源。
 
-1. 打开 Web 浏览器并导航到 [Azure 门户](https://portal.azure.com/)，然后在主页上选择 Azure 服务下的**资源组**。
+1. 打开 Web 浏览器并导航到 [Azure 门户](https://portal.azure.com/)，然后在主页的 Azure 服务下，选择“**资源组**”。
 
-    ![Azure 门户中 Azure 服务下红框突出显示的资源组的屏幕截图。](media/13-azure-portal-home-azure-services-resource-groups.png)
+    ![Azure 门户中 Azure 服务下以红色框突出显示的资源组的屏幕截图。](media/13-azure-portal-home-azure-services-resource-groups.png)
 
-2. 在任何字段搜索框的筛选器中，输入为此实验室创建的资源组的名称，然后从列表中选择你的资源组。
+2. 在任意字段筛选器的搜索框中，输入为此实验室创建的资源组名称，然后从列表中选择资源组。
 
 3. 在资源组的“概述”页面中，选择“删除资源组” 。
 
-    ![资源组的“概述”边栏选项卡的屏幕截图，其中“删除资源组”按钮以红框突出显示。](media/13-resource-group-delete.png)
+    ![资源组的“概述”边栏选项卡的屏幕截图，其中“删除资源组”按钮以红色框突出显示。](media/13-resource-group-delete.png)
 
-4. 在确认对话框中，输入要删除的资源组名称进行确认，然后选择“ **删除**”。
+4. 在“确认”对话框中，输入要删除的资源组名称进行确认，然后选择“**删除**”。
