@@ -10,7 +10,7 @@ lab:
 
 ## 开始之前
 
-你需要一个具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)，并且必须在该订阅中获得 Azure OpenAI 访问许可。 如果需要 Azure OpenAI 访问权限，请在 [Azure OpenAI 受限访问](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access)页进行申请。
+你需要具有管理权限的 [Azure 订阅](https://azure.microsoft.com/free)。
 
 ### 在你的 Azure 订阅上部署资源
 
@@ -38,7 +38,7 @@ lab:
     REGION=eastus
     ```
 
-    以下命令分配要用于资源组的名称，该资源组将容纳本练习中使用的所有资源。 分配给相应变量的资源组名称是 `rg-learn-postgresql-ai-$REGION`，其中 `$REGION` 是上文指定的位置。 但是，你可以将它更改为符合偏好的任何其他资源组名称。
+    以下命令分配要用于资源组的名称，该资源组将容纳本练习中使用的所有资源。 分配给相应变量的资源组名称是 `rg-learn-postgresql-ai-$REGION`，其中 `$REGION` 是先前指定的位置。 但是，你可以将它更改为符合偏好的任何其他资源组名称。
 
     ```bash
     RG_NAME=rg-learn-postgresql-ai-$REGION
@@ -48,16 +48,16 @@ lab:
 
     ```bash
     a=()
-    for i in {a..z} {A..Z} {0..9}; 
+    for i in {a..z} {A..Z} {0..9};
         do
-        a[$RANDOM]=$i
-    done
+        a[$RANDOM]=$i
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
     ```
 
-5. 如果有权访问多个 Azure 订阅，并且默认订阅不是要为此练习创建资源组和其他资源的订阅，请运行此命令来设置相应的订阅，将 `<subscriptionName|subscriptionId>` 令牌替换为要使用的订阅的名称或 ID：
+5. 如果有权访问多个 Azure 订阅，而默认订阅不是要在其中为此练习创建资源组和其他资源的订阅，请运行此命令来设置相应的订阅，将 `<subscriptionName|subscriptionId>` 令牌替换为要使用的订阅的名称或 ID：
 
     ```azurecli
     az account set --subscription <subscriptionName|subscriptionId>
@@ -77,7 +77,7 @@ lab:
 
     Bicep 部署脚本将完成此练习所需的 Azure 服务预配到你的资源组中。 部署的资源包括 Azure Database for PostgreSQL 灵活服务器、Azure OpenAI 和 Azure AI 语言服务。 Bicep 脚本还执行一些配置步骤，例如将 `azure_ai` 和 `vector` 扩展添加到 PostgreSQL 服务器的_允许列表_（通过 azure.extensions 服务器参数）、在服务器上创建名为 `rentals` 的数据库，以及使用 `text-embedding-ada-002` 模型将名为 `embedding` 的部署添加到 Azure OpenAI 服务。 请注意，Bicep 文件由此学习路径中的所有模块共享，因此在某些练习中只能使用某些已部署的资源。
 
-    部署需要数分钟才能完成。 你可以从 Cloud Shell 监视它，也可以导航到上述创建的资源组的“**部署**”页面，在那里观察部署进度。
+    部署需要数分钟才能完成。 你可以从 Cloud Shell 监视它，也可以导航到先前创建的资源组的“**部署**”页，在那里观察部署进度。
 
  8. 完成资源部署后，关闭 Cloud Shell 窗格。
  
@@ -102,7 +102,7 @@ lab:
     {"status":"Failed","error":{"code":"DeploymentFailed","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGrouName}/providers/Microsoft.Resources/deployments/{deploymentName}","message":"At least one resource deployment operation failed. Please list deployment operations for details. Please see https://aka.ms/arm-deployment-operations for usage details.","details":[{"code":"ResourceDeploymentFailure","target":"/subscriptions/{subscriptionId}/resourceGroups/{resourceGrouName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}","message":"The resource write operation failed to complete successfully, because it reached terminal provisioning state 'Failed'.","details":[{"code":"RegionIsOfferRestricted","message":"Subscriptions are restricted from provisioning in this region. Please choose a different region. For exceptions to this rule please open a support request with Issue type of 'Service and subscription limits'. See https://review.learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-request-quota-increase for more details."}]}]}}
     ```
 
-- 如果脚本由于接受负责任的 AI 协议的要求而无法创建 AI 资源，则可能会遇到以下错误：在这种情况下，使用 Azure 门户用户界面创建 Azure AI 服务资源，然后重新运行部署脚本。
+- 如果脚本由于必须接受负责任的 AI 协议而无法创建 AI 资源，则可能会遇到以下错误：在这种情况下，使用 Azure 门户用户界面创建 Azure AI 服务资源，然后重新运行部署脚本。
 
     ```bash
     {"code": "InvalidTemplateDeployment", "message": "The template deployment 'deploy' is not valid according to the validation procedure. The tracking id is 'f8412edb-6386-4192-a22f-43557a51ea5f'. See inner errors for details."}
@@ -117,17 +117,17 @@ lab:
 
 1. 在 [Azure 门户](https://portal.azure.com/)中，导航到新创建的 Azure Database for PostgreSQL 灵活服务器。
 
-2. 在资源菜单中的“**设置**”下，选择“**数据库**”为 `rentals` 数据库选择“**连接**”。
+1. 在资源菜单中的“**设置**”下，选择“**数据库**”为 `rentals` 数据库选择“**连接**”。 请注意，选择“**连接**”并不会直接连接到数据库，而是提供了多种连接数据库的说明。 查看“**从浏览器或本地连接**”中的说明，并按照这些说明通过 Azure Cloud Shell 建立连接。
 
     ![Azure Database for PostgreSQL 数据库页的屏幕截图。 用于租赁数据库的数据库和连接以红色框突出显示。](media/12-postgresql-rentals-database-connect.png)
 
-3. 在 Cloud Shell 中的“用户 pgAdmin 密码”提示符下，输入随机生成的 **pgAdmin** 登录密码。
+1. 在 Cloud Shell 中的“用户 pgAdmin 密码”提示符处，输入随机生成的 **pgAdmin** 登录密码。
 
     登录后，将显示 `rentals` 数据库的 `psql` 提示。
 
-4. 在本练习的其余部分中，可以继续在 Cloud Shell 中工作，因此选择窗格右上方的 **最大化** 按钮来展开浏览器窗口中的窗格可能会有所帮助。
+1. 在本练习的其余部分中，可以继续在 Cloud Shell 中工作，因此选择窗格右上方的“**最大化**”按钮来展开浏览器窗口中的窗格可能会有所帮助。
 
-    ![Azure Cloud Shell 窗格的屏幕截图，“最大化”按钮用红框突出显示。](media/12-azure-cloud-shell-pane-maximize.png)
+    ![Azure Cloud Shell 窗格的屏幕截图，其中“最大化”按钮以红色框突出显示。](media/12-azure-cloud-shell-pane-maximize.png)
 
 ## 在数据库中填充示例数据
 
@@ -174,19 +174,19 @@ lab:
     \COPY reviews FROM 'mslearn-postgresql/Allfiles/Labs/Shared/reviews.csv' CSV HEADER
     ```
 
-    命令输出应为 `COPY 354`，指示从 CSV 文件写入表中的 354 行。
+    命令输出应为 `COPY 354`，指示已从 CSV 文件写入表中 354 行。
 
 ## 安装和配置 `azure_ai` 扩展
 
-在使用 `azure_ai` 扩展之前，必须先将其安装到数据库中，并将其配置为连接到 Azure AI 服务资源。 `azure_ai` 扩展让你能够将 Azure OpenAI 和 Azure AI 语言服务集成到数据库中。 要在数据库中启用该扩展，请执行以下步骤：
+使用 `azure_ai` 扩展之前，必须先将其安装到数据库中，并将其配置为连接到 Azure AI Services 资源。 `azure_ai` 扩展允许将 Azure OpenAI 和 Azure AI 语言服务集成到数据库中。 要在数据库中启用该扩展，请按照以下步骤操作：
 
-1. 在 `psql` 提示符处执行以下命令，验证设置环境时运行的 Bicep 部署脚本是否已成功将 `azure_ai` 扩展和 `vector` 扩展添加到服务器的“_允许列表中_”：
+1. 在 `psql` 提示符处执行以下命令，验证设置环境时运行的 Bicep 部署脚本是否已成功将 `azure_ai` 扩展和 `vector` 扩展添加到服务器的_允许列表_：
 
     ```sql
     SHOW azure.extensions;
     ```
 
-    该命令显示服务器“_允许列表_”上的扩展列表。 如果所有内容都正确安装，则输出必须包含 `azure_ai` 和 `vector`，如下所示：
+    该命令显示服务器_允许列表_上的扩展列表。 如果所有内容都正确安装，则输出必须包含 `azure_ai` 和 `vector`，如下所示：
 
     ```sql
      azure.extensions 
@@ -194,27 +194,27 @@ lab:
      azure_ai,vector
     ```
 
-    在 Azure Database for PostgreSQL 灵活服务器数据库中安装和使用扩展之前，必须将其添加到服务器的“_允许列表_”中，如[如何使用 PostgreSQL 扩展](https://learn.microsoft.com/azure/postgresql/flexible-server/concepts-extensions#how-to-use-postgresql-extensions)中所述。
+    在 Azure Database for PostgreSQL 灵活服务器数据库中安装和使用扩展之前，必须将其添加到服务器的_允许列表_，如[如何使用 PostgreSQL 扩展](https://learn.microsoft.com/azure/postgresql/flexible-server/concepts-extensions#how-to-use-postgresql-extensions)中所述。
 
-2. 现在，你已准备好使用 [CREATE EXTENSION](https://www.postgresql.org/docs/current/sql-createextension.html) 命令安装 `azure_ai` 扩展。
+2. 现在，可以使用 [CREATE EXTENSION](https://www.postgresql.org/docs/current/sql-createextension.html) 命令安装 `azure_ai` 扩展。
 
     ```sql
     CREATE EXTENSION IF NOT EXISTS azure_ai;
     ```
 
-    `CREATE EXTENSION` 通过运行其脚本文件将新扩展加载到数据库中。 此脚本通常会创建新的 SQL 对象，例如函数、数据类型和架构。 如果已存在同名的扩展，则会引发错误。 添加 `IF NOT EXISTS` 允许命令在已经安装的情况下执行，而不会引发错误。
+    `CREATE EXTENSION` 通过运行其脚本文件将新扩展加载到数据库。 此脚本通常新建 SQL 对象，例如函数、数据类型和架构。 如果已存在同名的扩展，则会引发错误。 添加 `IF NOT EXISTS` 允许命令执行，而不会在已安装时引发错误。
 
 ## 检查 `azure_ai` 扩展中包含的对象
 
 查看 `azure_ai` 扩展中包含的对象可以更好地了解其功能。 在此任务中，你将检查扩展添加到数据库中的各种架构、用户定义的函数 (UDFs) 和复合类型。
 
-1. 在 Cloud Shell 中使用 `psql` 时，为查询结果启用扩展显示可能会有所帮助，因为它提高了后续命令输出的可读性。 执行以下命令以允许自动应用扩展显示。
+1. 在 Cloud Shell 中使用 `psql` 时，对查询结果启用扩展显示可能会有所帮助，因为它可以提高后续命令输出的可读性。 执行以下命令以允许自动应用扩展显示。
 
     ```sql
     \x auto
     ```
 
-2. [`\dx`元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DX-LC)用于列出扩展中包含的对象。 从 `psql` 命令提示符运行以下命令，查看 `azure_ai` 扩展中的对象。 可能需要按空格键才能查看对象的完整列表。
+2. [`\dx` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DX-LC)用于列出扩展中包含的对象。 从 `psql` 命令提示符运行以下命令，查看 `azure_ai` 扩展中的对象。 可能需要按空格键才能查看对象的完整列表。
 
     ```psql
     \dx+ azure_ai
@@ -233,7 +233,7 @@ lab:
 
 该 `azure_ai` 架构提供用于直接从数据库与 Azure AI 和 ML 服务交互的框架。 它包含一些函数，用于设置与这些服务的连接，以及从同样托管在同一架构中的 `settings` 表中检索这些服务。 该 `settings` 表为与 Azure AI 和 ML 服务关联的终结点和密钥在数据库中提供安全存储。
 
-1. 要查看架构中定义的函数，可以使用[`\df`元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)，指定应显示其函数的架构。 运行以下命令以查看 `azure_ai` 架构中的函数：
+1. 要查看架构中定义的函数，可以使用 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)，指定应显示其函数的架构。 运行以下命令以查看 `azure_ai` 架构中的函数：
 
     ```sql
     \df azure_ai.*
@@ -250,7 +250,7 @@ lab:
      azure_ai | version  | text      |           | func
     ```
 
-    该 `set_setting()` 函数允许你设置 Azure AI 和 ML 服务的终结点和密钥，以便扩展可以连接到它们。 它接受一个**密钥**和分配给它的**值**。 `azure_ai.get_setting()` 函数提供了一种方法来检索你使用 `set_setting()` 函数设置的值。 它接受要查看的设置的**键**，并返回分配给它的值。 对于这两种方法，密钥必须是下列项之一：
+    该 `set_setting()` 函数允许你设置 Azure AI 和 ML 服务的终结点和密钥，以便扩展可以连接到它们。 它接受一个**密钥**和分配给它的**值**。 `azure_ai.get_setting()` 函数提供了一种方法来检索你使用 `set_setting()` 函数设置的值。 它接受要查看的设置的**密钥**，并返回分配给它的值。 对于这两种方法，密钥必须是下列项之一：
 
     | 键 | 说明 |
     | --- | ----------- |
@@ -265,7 +265,7 @@ lab:
     >
     > 由于 Azure AI 服务的连接信息（包括 API 密钥）存储在数据库的配置表中，因此 `azure_ai` 扩展定义了一个名为 `azure_ai_settings_manager` 的角色，以确保此信息受到保护，并且仅供分配了该角色的用户访问。 此角色允许读取和写入与扩展相关的设置。 只有 `azure_ai_settings_manager` 角色的成员才可以调用 `azure_ai.get_setting()` 和 `azure_ai.set_setting()` 函数。 在 Azure Database for PostgreSQL 灵活服务器中，所有管理员用户（分配了 `azure_pg_admin` 角色的用户）也分配了 `azure_ai_settings_manager` 角色。
 
-2. 若要演示如何使用 `azure_ai.set_setting()` 和 `azure_ai.get_setting()` 函数，请配置与 Azure OpenAI 帐户的连接。 使用打开 Cloud Shell 的同一浏览器选项卡，最小化或还原 Cloud Shell 窗格，然后在 [Azure 门户](https://portal.azure.com/)中导航到 Azure OpenAI 资源。 进入 Azure OpenAI 资源页后，在资源菜单中的“**资源管理**”部分下，选择“**密钥和终结点**”，然后复制终结点和其中一个可用密钥。
+2. 若要演示如何使用 `azure_ai.set_setting()` 和 `azure_ai.get_setting()` 函数，请配置与 Azure OpenAI 帐户的连接。 使用打开 Cloud Shell 的同一浏览器标签页，最小化或还原 Cloud Shell 窗格，然后在 [Azure 门户](https://portal.azure.com/)中导航到 Azure OpenAI 资源。 进入 Azure OpenAI 资源页后，在资源菜单中的“**资源管理**”部分下，选择“**密钥和终结点**”，然后复制终结点和其中一个可用密钥。
 
     ![显示 Azure OpenAI 服务的“密钥和终结点”页的屏幕截图，其中“密钥 1”和“终结点复制”按钮以红色框突出显示。](media/12-azure-openai-keys-and-endpoints.png)
 
@@ -288,11 +288,11 @@ lab:
     SELECT azure_ai.get_setting('azure_openai.subscription_key');
     ```
 
-    `azure_ai` 扩展现已连接到你的 Azure OpenAI 帐户。
+    `azure_ai` 扩展现已连接到 Azure OpenAI 帐户。
 
 ### 查看 Azure OpenAI 架构
 
-`azure_openai` 架构提供了使用 Azure OpenAI 将文本值的矢量嵌入创建集成到数据库中的功能。 通过使用此架构，可以直接从数据库[使用 Azure OpenAI 生成嵌入](https://learn.microsoft.com/azure/ai-services/openai/how-to/embeddings)，以创建输入文本的矢量表示形式，然后可将其用于矢量相似性搜索，并由机器学习模型使用。 该架构包含一个函数 `create_embeddings()`，其中有两个重载。 一个重载接受单个输入字符串，另一个重载要求输入字符串数组。
+该 `azure_openai` 架构提供使用 Azure OpenAI 将创建文本值的矢量嵌入集成到数据库的功能。 使用此架构时，可以[使用 Azure OpenAI 直接从数据库生成嵌入](https://learn.microsoft.com/azure/ai-services/openai/how-to/embeddings)，以创建输入文本的矢量表示形式，然后可将其用于矢量相似性搜索，并由机器学习模型使用。 此架构包含一个有两个重载的函数 `create_embeddings()`。 一个重载接受单个输入字符串，另一个重载需要输入字符串数组。
 
 1. 如上所述，可以使用 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)查看 `azure_openai` 架构中函数的详细信息：
 
@@ -300,25 +300,25 @@ lab:
     \df azure_openai.*
     ```
 
-    输出显示了 `azure_openai.create_embeddings()` 函数的两个重载，让你可以查看函数的两个版本及其返回的类型之间的差异。 输出中的 `Argument data types` 属性显示了两个函数重载所需的参数列表：
+    输出显示 `azure_openai.create_embeddings()` 函数的两个重载，使你能够查看两个函数版本之间的差异以及它们返回的类型。 输出中的 `Argument data types` 属性显示两个函数重载所需的参数列表：
 
     | 参数    | 类型       | 默认 | 说明                                                          |
     | --------------- | ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
-    | deployment_name | `text`      |    | Azure OpenAI Studio 中包含 `text-embedding-ada-002` 模型的部署名称。               |
+    | deployment_name | `text`      |    | Azure OpenAI Studio 中包含 `text-embedding-ada-002` 模型.                的部署名称|
     | input     | `text` 或 `text[]` |    | 为其创建嵌入的输入文本（或文本数组）。                                |
-    | batch_size   | `integer`     | 100  | 仅适用于期望输入 `text[]` 的重载。 指定一次要处理的记录数。          |
+    | batch_size   | `integer`     | 100  | 仅适用于需要 `text[]` 输入的重载。 指定一次要处理的记录数。          |
     | timeout_ms   | `integer`     | 3600000 | 超时的毫秒数，超过该时间后操作将停止。                                 |
     | throw_on_error | `boolean`     | 是  | 指示函数是否应在出错时引发异常，从而导致包装事务回滚的标志。 |
     | max_attempts  | `integer`     | 1   | 在发生故障时重新调用 Azure OpenAI 服务的尝试次数。                     |
     | retry_delay_ms | `integer`     | 1000  | 尝试重新调用 Azure OpenAI 服务终结点之前等待的时间（以毫秒为单位）。        |
 
-2. 若要提供使用该函数的简化示例，请运行以下查询，为 `listings` 表中的 `description` 字段创建一个矢量嵌入。 函数中的 `deployment_name` 参数设置为 `embedding`，即 Azure OpenAI 服务中 `text-embedding-ada-002` 模型的部署名称（它是由 Bicep 部署脚本使用该名称创建的）：
+2. 要提供使用该函数的简化示例，请运行以下查询，以便为 `listings` 表中的 `description` 字段创建矢量嵌入。 函数中的 `deployment_name` 参数设置为 `embedding`，这是 Azure OpenAI 服务中 `text-embedding-ada-002` 模型的部署名称（由 Bicep 部署脚本使用该名称创建）：
 
     ```sql
     SELECT
-      id,
-      name,
-      azure_openai.create_embeddings('embedding', description) AS vector
+        id,
+        name,
+        azure_openai.create_embeddings('embedding', description) AS vector
     FROM listings
     LIMIT 1;
     ```
@@ -331,23 +331,23 @@ lab:
       1 | Stylish One-Bedroom Apartment | {0.020068742,0.00022734122,0.0018286322,-0.0064167166,...}
     ```
 
-    为简洁起见，矢量嵌入在上述输出中缩写。
+    为简洁起见，上述输出中矢量嵌入采用缩写形式。
 
-    [嵌入](https://learn.microsoft.com/azure/postgresql/flexible-server/generative-ai-overview#embeddings)是机器学习和自然语言处理 (NLP) 中的一个概念，涉及将单词、文档或实体等对象表示为多维空间中的[矢量](https://learn.microsoft.com/azure/postgresql/flexible-server/generative-ai-overview#vectors)。 嵌入允许机器学习模型评估两个信息之间的密切程度。 此技术可有效识别数据之间的关系和相似性，使算法能够识别模式并做出准确预测。
+    [嵌入](https://learn.microsoft.com/azure/postgresql/flexible-server/generative-ai-overview#embeddings)是机器学习和自然语言处理 (NLP) 中的概念，涉及将单词、文档或实体等对象表示为多维空间中的[矢量](https://learn.microsoft.com/azure/postgresql/flexible-server/generative-ai-overview#vectors)。 嵌入允许机器学习模型评估两条信息的关联程度。 这种技术可有效识别数据之间的关系和相似性，使算法能够识别模式并做出准确的预测。
 
-    `azure_ai` 扩展让你可以为输入文本生成嵌入。 要使生成的矢量与数据库中的其余数据一起存储，必须按照[在数据库中启用矢量支持](https://learn.microsoft.com/azure/postgresql/flexible-server/how-to-use-pgvector#enable-extension)文档中的指南安装 `vector` 扩展。 但是，这超出了本练习的范围。
+    `azure_ai` 扩展让你可以为输入文本生成嵌入。 要使生成的矢量与数据库中的其余数据一起存储，必须按照[在数据库中启用矢量支持](https://learn.microsoft.com/azure/postgresql/flexible-server/how-to-use-pgvector#enable-extension)文档中的指南安装 `vector` 扩展。 但是，这不属于本练习的范畴。
 
-### 检查azure_cognitive架构
+### 检查 azure_cognitive 架构
 
-该 `azure_cognitive` 架构提供用于直接从数据库与 Azure AI 服务交互的框架。 架构中包含的 Azure AI 服务集成提供了一套丰富的 AI 语言功能，可直接从数据库访问。 这些功能包括情绪分析、语言检测、关键短语提取、实体识别，文本汇总和翻译。 可通过 [Azure AI 语言服务](https://learn.microsoft.com/azure/ai-services/language-service/overview)启用这些功能。
+该 `azure_cognitive` 架构提供直接从数据库与 Azure AI 服务交互的框架。 架构中的 Azure AI 服务集成提供一组丰富且可直接从数据库访问的 AI 语言功能。 这些功能包括情感分析、语言检测、关键短语提取、实体识别、文本汇总和翻译。 可通过 [Azure AI 语言服务](https://learn.microsoft.com/azure/ai-services/language-service/overview)启用这些功能。
 
-1. 若要查看架构中定义的所有函数，可以像以前一样使用[`\df`元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)。 若要查看 `azure_cognitive` 架构中的函数，请运行：
+1. 若要查看架构中定义的所有函数，可以像以前一样使用 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)。 若要查看架构中的 `azure_cognitive` 函数，请运行：
 
     ```sql
     \df azure_cognitive.*
     ```
 
-2. 此架构中定义了许多函数，因此 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)的输出可能难以读取，因此最好将其拆分为较小的区块。 运行以下命令来仅查看 `analyze_sentiment()` 函数：
+2. 此架构中定义了许多函数，因此 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)的输出可能难以读取，最好将其拆分为较小的区块。 运行以下命令来仅查看 `analyze_sentiment()` 函数：
 
     ```sql
     \df azure_cognitive.analyze_sentiment
@@ -368,13 +368,13 @@ lab:
 
     对于每个函数，检查函数的各种形式及其预期输入和生成的数据类型。
 
-4. 除了函数， `azure_cognitive` 架构还包含多个复合类型，这些类型用作各种函数的返回数据类型。 必须了解函数返回的数据类型的结构，以便正确处理查询中的输出。 例如，运行以下命令检查 `sentiment_analysis_result` 类型：
+4. 除了函数，`azure_cognitive` 架构还包含多个复合类型，这些类型用作各种函数的返回数据类型。 必须了解函数返回的数据类型的结构，以便正确处理查询中的输出。 例如，运行以下命令检查 `sentiment_analysis_result` 类型：
 
     ```sql
     \dT+ azure_cognitive.sentiment_analysis_result
     ```
 
-5. 上述命令的输出显示 `sentiment_analysis_result` 类型是 `tuple`。 可以通过运行以下命令来查看 `sentiment_analysis_result` 类型中包含的列，从而进一步了解 `tuple` 的结构：
+5. 上述命令的输出显示 `sentiment_analysis_result` 类型为 `tuple`。 可以通过运行以下命令进一步理解该 `tuple` 的结构，查看 `sentiment_analysis_result` 类型中包含的列：
 
     ```sql
     \d+ azure_cognitive.sentiment_analysis_result
@@ -392,11 +392,11 @@ lab:
      negative_score | double precision |     |     |    | plain  |
     ```
 
-    `azure_cognitive.sentiment_analysis_result` 是一个复合类型，包含输入文本的情绪预测。 它包括情绪（可以是积极、消极、中立或混合）以及文本中发现的积极、中立和消极方面的分数。 分数表示为介于 0 和 1 之间的实数。 例如，在（中性，0.26、0.64、0.09）中，情绪是中性的，其中正面分数为 0.26，中性为 0.64，负面分数 为0.09。
+    `azure_cognitive.sentiment_analysis_result` 是复合类型，包含对输入文本的情绪预测。 它包括情绪（可以是积极、消极、中立或混合）以及文本中发现的积极、中立和消极方面的分数。 分数表示为介于 0 和 1 之间的实数。 例如，在（中性，0.26、0.64、0.09）中，情绪是中性的，其中正面分数为 0.26，中性为 0.64，负面分数 为0.09。
 
-6. 与 `azure_openai` 函数一样，要使用 `azure_ai` 扩展成功调用 Azure AI 服务，必须提供 Azure AI 语言服务的终结点和密钥。 使用打开 Cloud Shell 的同一浏览器选项卡，最小化或还原 Cloud Shell 窗格，然后在 [Azure 门户](https://portal.azure.com/)中导航到语言服务资源。 在资源菜单的**资源管理**部分中，选择“**键和终结点**”。
+6. 与 `azure_openai` 函数一样，要使用 `azure_ai` 扩展成功调用 Azure AI 服务，必须提供 Azure AI 语言服务的终结点和密钥。 使用打开 Cloud Shell 的同一浏览器标签页，最小化或还原 Cloud Shell 窗格，然后在 [Azure 门户](https://portal.azure.com/)中导航到语言服务资源。 在资源菜单的“**资源管理**”部分中，选择“**密钥和终结点**”。
 
-    ![显示 Azure 语言服务的“密钥和终结点”页的屏幕截图，其中“密钥 1”和“终结点复制”按钮用红色框突出显示。](media/12-azure-language-service-keys-and-endpoints.png)
+    ![显示 Azure 语言服务的“密钥和终结点”页面的屏幕截图，其中“密钥 1”和“终结点复制”按钮以红色框突出显示。](media/12-azure-language-service-keys-and-endpoints.png)
 
 7. 复制终结点并访问密钥值，并将 `{endpoint}` 和 `{api-key}` 令牌替换为从 Azure 门户复制的值。 再次最大化 Cloud Shell，并在 Cloud Shell 的 `psql` 命令提示符下运行命令，将值添加到配置表中。
 
@@ -412,20 +412,20 @@ lab:
 
     ```sql
     SELECT
-      id,
-      comments,
-      azure_cognitive.analyze_sentiment(comments, 'en') AS sentiment
+        id,
+        comments,
+        azure_cognitive.analyze_sentiment(comments, 'en') AS sentiment
     FROM reviews
     WHERE id IN (1, 3);
     ```
 
-    观察输出中的 `sentiment` 值、`(mixed,0.71,0.09,0.2)` 和 `(positive,0.99,0.01,0)`。 这些代表上述查询中 `sentiment_analysis_result` 函数返回的 `analyze_sentiment()`。 分析是在 `reviews` 表中的 `comments` 字段上执行的。
+    观察输出中的 `sentiment` 值、`(mixed,0.71,0.09,0.2)` 和 `(positive,0.99,0.01,0)`。 这些值表示上述查询中 `analyze_sentiment()` 函数返回的 `sentiment_analysis_result`。 分析是在 `reviews` 表中的 `comments` 字段上执行的。
 
 ## 检查 Azure ML 架构
 
 该 `azure_ml` 架构允许函数直接从数据库连接到 Azure ML 服务。
 
-1. 若要查看架构中定义的函数，可以使用[`\df`元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)。 若要查看架构中的 `azure_ml` 函数，请运行：
+1. 若要查看架构中定义的函数，可以使用 [`\df` 元命令](https://www.postgresql.org/docs/current/app-psql.html#APP-PSQL-META-COMMAND-DF-LC)。 若要查看架构中的 `azure_ml` 函数，请运行：
 
     ```sql
     \df azure_ml.*
@@ -449,16 +449,16 @@ lab:
 
 ## 清理
 
-完成本练习后，请删除创建的 Azure 资源。 你需要为配置的容量（而不是数据库的使用量）付费。 按照这些说明删除资源组和为此实验室创建的所有资源。
+完成本练习后，请删除已创建的 Azure 资源。 需要基于已配置的容量付费，而不是基于数据库的使用量付费。 按照这些说明删除资源组和为此实验室创建的所有资源。
 
-1. 打开 Web 浏览器并导航到 [Azure 门户](https://portal.azure.com/)，然后在主页上选择 Azure 服务下的**资源组**。
+1. 打开 Web 浏览器并导航到 [Azure 门户](https://portal.azure.com/)，然后在主页的 Azure 服务下，选择“**资源组**”。
 
-    ![Azure 门户中 Azure 服务下红框突出显示的资源组的屏幕截图。](media/12-azure-portal-home-azure-services-resource-groups.png)
+    ![Azure 门户中 Azure 服务下以红色框突出显示的资源组的屏幕截图。](media/12-azure-portal-home-azure-services-resource-groups.png)
 
-2. 在任何字段搜索框的筛选器中，输入为此实验室创建的资源组的名称，然后从列表中选择你的资源组。
+2. 在任意字段筛选器的搜索框中，输入为此实验室创建的资源组名称，然后从列表中选择资源组。
 
 3. 在资源组的“概述”页面中，选择“删除资源组” 。
 
-    ![资源组的“概述”边栏选项卡的屏幕截图，其中“删除资源组”按钮以红框突出显示。](media/12-resource-group-delete.png)
+    ![资源组的“概述”边栏选项卡的屏幕截图，其中“删除资源组”按钮以红色框突出显示。](media/12-resource-group-delete.png)
 
-4. 在确认对话框中，输入要删除的资源组名称进行确认，然后选择“**删除**”。
+4. 在“确认”对话框中，输入要删除的资源组名称进行确认，然后选择“**删除**”。
