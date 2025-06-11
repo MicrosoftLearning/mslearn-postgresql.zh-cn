@@ -236,7 +236,7 @@ lab:
 
     1. 选择菜单栏中带有“*运行*”图标的省略号，然后选择“**更改 PostgreSQL 数据库**”。 从数据库列表中选择 `zoodb`。
 
-    > &#128221; 还可以更改查询窗格上的数据库。 可以在查询选项卡本身下记下服务器名称和数据库名称。 选择数据库名称将显示数据库列表。 从列表中选择 `zoodb` 数据库。
+        > &#128221; 还可以更改查询窗格上的数据库。 可以在查询选项卡本身下记下服务器名称和数据库名称。 选择数据库名称将显示数据库列表。 从列表中选择 `zoodb` 数据库。
 
     1. 再次运行 **SELECT current_database()** 语句以确认数据库现在设置为 `zoodb`。
 
@@ -418,4 +418,18 @@ lab:
 
 1. 如果不再需要此 PostgreSQL 服务器进行其他练习，若要避免产生不必要的 Azure 成本，请删除在本练习中创建的资源组。
 
+1. 如果想让 PostgreSQL 服务器继续运行，可以保持其开启状态。 如果不想让它一直运行，可以在 bash 终端停止服务器，避免产生不必要的费用。 运行以下命令以停止服务器：
+
+    ```azurecli
+    az postgres flexible-server stop --name <your-server-name> --resource-group $RG_NAME
+    ```
+
+    将 `<your-server-name>` 替换为你的 PostgreSQL 服务器名称。
+
+    > &#128221; 你也可以从 Azure 门户停止服务器。 在 Azure 门户中，导航到**资源组**，选择之前创建的资源组。 选择 PostgreSQL 服务器，然后从菜单中选择“停止”****。
+
 1. 如果需要，请删除之前克隆的 Git 存储库。
+
+你已成功完成此练习。 你已学习如何分配 RBAC 角色以管理对 Azure Database for PostgreSQL 资源的访问，以及通过 PostgreSQL GRANTS 控制数据库操作权限。
+
+你还学习了如何在 Microsoft Entra ID 中创建新用户帐户，并分配读取者和参与者角色。 最后，你在 PostgreSQL 中创建了新角色，并为其分配访问数据库的权限。

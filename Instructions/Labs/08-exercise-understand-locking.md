@@ -237,7 +237,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
     服务器名称可在 Azure 门户的“**概述**”页面或 bicep 脚本的输出中找到。
 
     ```sql
-   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin postgres
+   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin adventureworks
     ```
 
     系统会提示输入上面复制的管理员帐户密码。
@@ -272,7 +272,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
 1. 接下来，使用 `COPY` 命令将 CSV 文件数据加载到之前创建的表中。 执行以下命令以填充 `production.workorder` 表：
 
     ```sql
-    \COPY production.workorder FROM 'mslearn-postgresql/Allfiles/Labs/08/Lab8_workorder.csv' CSV HEADER
+    \COPY production.workorder FROM 'Allfiles/Labs/08/Lab8_workorder.csv' CSV HEADER
     ```
 
     命令输出应为 `COPY 72591`，表明已从 CSV 文件写入表中 72,591 行。
@@ -355,7 +355,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
 
 1. 返回到“*第一个*”查询窗口，再次执行该窗口中的查询。
 
-1. 请注意，第一行的 **stockedqty** 值仍然是 **673**。 查询正在使用数据的快照，并且看不到来自其他事务的更新。
+1. 请注意，第一行的 **scrappedqty** 值仍是 **673**。 查询正在使用数据的快照，并且看不到来自其他事务的更新。
 
 1. 选择“*第二个*”查询选项卡，删除已有查询，输入以下查询，选择“**运行**”。
 
